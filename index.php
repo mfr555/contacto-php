@@ -10,31 +10,31 @@
   <meta charset="UTF-8">
   <title>Formulario AJAX</title>
   <script src="https://www.google.com/recaptcha/api.js?render=<?php echo $siteKey; ?>"></script>
-  <style>
-    #mensaje { margin-top: 15px; font-weight: bold; }
-    #mensaje.ok { color: green; }
-    #mensaje.error { color: red; }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <form id="form-contacto">
-    <input type="text" name="nombre" placeholder="Nombre" required><br>
-    <input type="email" name="email" placeholder="Email" required><br>
-    <textarea name="mensaje" placeholder="Mensaje" required></textarea><br>
-    <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
-    <button type="submit">Enviar</button>
-  </form>
+  <div class="row">
+    <div class="col-lg-3 col-md-4 col-12">
+      <form id="form-contacto">
+        <input type="text" name="nombre" class="form-control" placeholder="Nombre" required>
+        <input type="email" name="email" class="form-control" placeholder="Email" required>
+        <textarea name="mensaje" class="form-control" placeholder="Mensaje" required></textarea>
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+        <button type="submit" class="btn btn-primary">Enviar</button>
 
-  <div id="mensaje"></div>
-
+        <div id="form-response"></div>
+      </form>      
+    </div>
+  </div>
+  
   <script>
     const form = document.getElementById('form-contacto');
-    const mensajeDiv = document.getElementById('mensaje');
+    const responseDiv = document.getElementById('form-response');
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      mensajeDiv.textContent = "Enviando...";
-      mensajeDiv.className = "";
+      responseDiv.textContent = "Enviando...";
+      responseDiv.className = "";
 
       grecaptcha.ready(function () {
         grecaptcha.execute("<?php echo $siteKey; ?>", {action: 'formulario'}).then(function (token) {
@@ -48,17 +48,17 @@
           .then(res => res.json())
           .then(data => {
             if (data.success) {
-              mensajeDiv.textContent = data.message;
-              mensajeDiv.className = "ok";
+              responseDiv.textContent = data.message;
+              responseDiv.className = "text-success";
               form.reset();
             } else {
-              mensajeDiv.textContent = data.message;
-              mensajeDiv.className = "error";
+              responseDiv.textContent = data.message;
+              responseDiv.className = "text-error";
             }
           })
           .catch(err => {
-            mensajeDiv.textContent = "Ocurrió un error inesperado.";
-            mensajeDiv.className = "error";
+            responseDiv.textContent = "Ocurrió un error inesperado: " + err.message;
+            responseDiv.className = "text-error";
           });
         });
       });
